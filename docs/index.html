@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Console</title>
+    <link rel="stylesheet" href="normalize.css" />
+    <link rel="stylesheet" href="xterm.css" />
+    <script src="bundle.js"></script>
+    <style>
+      body {
+        background-color: black;
+        margin: 0px;
+        overflow: hidden;
+      }
+      #terminal {
+        position: fixed;
+      }
+      #button {
+        position: fixed;
+        right: 16px;
+        top: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="button">
+      <button id="connect">Connect</button>
+    </div>
+    <div id="terminal"></div>
+    <!-- <div id="three"></div> -- o JS coloca esse elemento depois-->
+  </body>
+</html>
