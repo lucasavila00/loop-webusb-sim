@@ -136,8 +136,12 @@ class Main {
       }
     });
   }
+  public printHeightList = () => {
+    this.renderer.printHeightList();
+  };
 }
 
 document.addEventListener("DOMContentLoaded", _event => {
-  new Main();
+  var controller = new Main();
+  controller.printHeightList();
 });

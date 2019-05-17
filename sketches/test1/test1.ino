@@ -9,7 +9,7 @@
  * The URL here provides a hint to the browser about what page the user should
  * navigate to to interact with the device.
  */
-WebUSB WebUSBSerial(1 /* https:// */, "webusb.github.io/arduino/demos/console");
+WebUSB WebUSBSerial(1 /* https:// */, "degroote22.github.io/loop-webusb-sim");
 
 #define Serial WebUSBSerial
 #define true 1
