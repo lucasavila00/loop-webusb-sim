@@ -1,0 +1,18 @@
+#terminal {
+  position: fixed;
+}
+#button {
+  position: fixed;
+  right: 16px;
+  top: 48px;
+}
+
+#links {
+  position: fixed;
+  right: 16px;
+  top: 16px;
+}
+
+#link {
+  color: white;
+}

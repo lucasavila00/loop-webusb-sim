@@ -7,6 +7,14 @@ import {
 } from "./constants";
 import { IHeightMap, IPosition } from "./interfaces";
 
+export function getRendererType(): "LOOP" | "TABLE" {
+  if ((window as any).renderer_type === "LOOP") {
+    return "LOOP";
+  } else {
+    return "TABLE";
+  }
+}
+
 export function easeInOutQuad(t: number): number {
   return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
 }

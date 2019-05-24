@@ -1,7 +1,10 @@
 import { Serial, Port } from "./serial";
 import { Terminal } from "xterm";
-import { Renderer } from "./renderer";
+import { RendererLoop } from "./renderer_loop";
 import { TERMINAL_OPTIONS } from "./constants";
+import { Renderer } from "./interfaces";
+import { getRendererType } from "./helpers";
+import { RendererTable } from "./renderer_table";
 
 class Main {
   private arduinoPort: Port | undefined = undefined;
@@ -11,7 +14,8 @@ class Main {
   private terminalRendererEelement = document.getElementById("terminal");
 
   // three
-  private renderer = new Renderer();
+  private renderer: Renderer =
+    getRendererType() === "LOOP" ? new RendererLoop() : new RendererTable();
 
   constructor() {
     if (!this.terminalRendererEelement) {
@@ -22,9 +26,6 @@ class Main {
     this.registerTerminalKeyboardToSerial();
     this.registerClickHandlers();
     this.tryConnectingToArduino();
-
-    this.renderer.animate();
-    // this.renderer.render(); // remove when using next line for animation loop (requestAnimationFrame)
   }
 
   private connect = () => {
@@ -49,7 +50,7 @@ class Main {
           data => {
             const textDecoder = new TextDecoder();
             const dataDecoded = textDecoder.decode(data);
-            const processed = this.processDedodedData(dataDecoded);
+            const processed = this.processDecodedData(dataDecoded);
             if (!processed) {
               this.terminal.write(dataDecoded);
             }
@@ -65,29 +66,12 @@ class Main {
     );
   };
 
-  private processDedodedData = (data: string): boolean => {
-    if (data.startsWith("l")) {
-      this.processLight(data);
-      return true;
-    } else if (data.startsWith("r")) {
-      this.resetRenderer();
-      return true;
+  private processDecodedData = (data: string): boolean => {
+    // console.log({ data });
+    if (data.startsWith("_")) {
+      return this.renderer.process(data);
     }
     return false;
-  };
-
-  private processLight = (data: string) => {
-    //l-123-123-123-123
-    const arr = data.split("-");
-    const i = parseInt(arr[1]);
-    const r = parseInt(arr[2]);
-    const g = parseInt(arr[3]);
-    const b = parseInt(arr[4]);
-    this.renderer.light(i, r, g, b);
-  };
-
-  private resetRenderer = () => {
-    this.renderer.reset();
   };
 
   private registerTerminalKeyboardToSerial() {
@@ -137,7 +121,7 @@ class Main {
     });
   }
   public printHeightList = () => {
-    this.renderer.printHeightList();
+    this.renderer.printDebugInfo();
   };
 }
 

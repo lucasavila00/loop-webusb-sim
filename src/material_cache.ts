@@ -4,13 +4,13 @@ import { MeshPhongMaterial } from "three";
 
 const _cache: { [key: string]: MeshPhongMaterial } = {};
 
+let lock = 0;
 export function getMaterial(r: number, g: number, b: number) {
-  var color =
-    pad0(r.toString(16)) + pad0(g.toString(16)) + pad0(b.toString(16));
+  var color = (r << 16) | (g << 8) | b;
 
   if (_cache[color] == undefined) {
     _cache[color] = new THREE.MeshPhongMaterial({
-      color: parseInt(color, 16),
+      color: color,
       flatShading: true,
     });
   }

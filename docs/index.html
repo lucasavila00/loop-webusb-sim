@@ -1,27 +1,21 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Console</title>
+    <title>Loop</title>
     <link rel="stylesheet" href="normalize.css" />
     <link rel="stylesheet" href="xterm.css" />
+    <link rel="stylesheet" href="custom.css" />
+    <link rel="stylesheet" href="loop.css" />
     <script src="bundle.js"></script>
-    <style>
-      body {
-        background-color: black;
-        margin: 0px;
-        overflow: hidden;
-      }
-      #terminal {
-        position: fixed;
-      }
-      #button {
-        position: fixed;
-        right: 16px;
-        top: 16px;
-      }
-    </style>
   </head>
+  <script>
+    window.renderer_type = "LOOP";
+  </script>
   <body>
+    <div id="links">
+      <a href="/" id="link">Loop</a>
+      <a href="/table.html" id="link">Mesa</a>
+    </div>
     <div id="button">
       <button id="connect">Connect</button>
     </div>

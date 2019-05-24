@@ -14,3 +14,8 @@ export interface IPosition {
   y: number;
   z: number;
 }
+
+export interface Renderer {
+  process: (s: string) => boolean;
+  printDebugInfo: () => void;
+}
