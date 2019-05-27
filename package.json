@@ -10,9 +10,11 @@
     "three-orbitcontrols-ts": "^0.1.2",
     "tsify": "^4.0.1",
     "typescript": "^3.4.5",
+    "uglify-js": "^3.5.15",
+    "uglifyify": "^5.0.1",
     "xterm": "^3.13.1"
   },
   "scripts": {
-    "build": "browserify src/main.ts -p [ tsify --noImplicitAny ] --debug > docs/bundle.js"
+    "build": "browserify src/main.ts -p [ tsify --noImplicitAny ] | uglifyjs -c > docs/bundle.js"
   }
 }
