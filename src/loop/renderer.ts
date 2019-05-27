@@ -171,22 +171,36 @@ export class RendererLoop implements Renderer {
     const light = new THREE.DirectionalLight(0xffffff);
     light.position.set(1, 1, 1);
     this.scene.add(light);
-    const light2 = new THREE.DirectionalLight(0x002288);
-    light2.position.set(-1, -1, -1);
-    this.scene.add(light2);
+    // const light2 = new THREE.DirectionalLight(0x002288);
+    // light2.position.set(-1, -1, -1);
+    // this.scene.add(light2);
     const light3 = new THREE.AmbientLight(0x222222);
     this.scene.add(light3);
   }
 
   private createMeshes() {
+    const MAX_HEIGHT = 50;
+
+    // cria a "mesa"
+    const table_geometry = new THREE.PlaneGeometry(700, 300);
+    const table_material = getMaterial(255, 255, 255);
+    const table_mesh = new THREE.Mesh(table_geometry, table_material);
+    table_mesh.position.x = 0;
+    table_mesh.position.y = -MAX_HEIGHT;
+    table_mesh.position.z = 0;
+    table_mesh.rotateX(-Math.PI / 2);
+
+    this.scene.add(table_mesh);
+
     const geometry = new THREE.SphereGeometry(2, 8, 8);
-    const material = new THREE.MeshPhongMaterial({
-      color: 0x000000,
-      flatShading: true,
-    });
-    for (var i = 0; i < MAX; i++) {
-      var mesh = new THREE.Mesh(geometry, material);
-      var pos = getPosition(i);
+    const material = getMaterial(0, 0, 0);
+
+    const line_material = getMaterial(191, 191, 191);
+
+    for (let i = 0; i < MAX; i++) {
+      // cria a bola
+      const mesh = new THREE.Mesh(geometry, material);
+      const pos = getPosition(i);
       mesh.position.x = pos.x;
       mesh.position.y = pos.y;
       mesh.position.z = pos.z;
@@ -194,6 +208,19 @@ export class RendererLoop implements Renderer {
       mesh.matrixAutoUpdate = false;
       this.scene.add(mesh);
       this.meshes.push(mesh);
+
+      // cria a linha
+      const line_geometry = new THREE.CylinderGeometry(
+        1,
+        1,
+        MAX_HEIGHT + pos.y,
+      );
+      const line_mesh = new THREE.Mesh(line_geometry, line_material);
+      line_mesh.position.x = pos.x;
+      line_mesh.position.y = (pos.y - MAX_HEIGHT) / 2;
+      line_mesh.position.z = pos.z;
+
+      this.scene.add(line_mesh);
     }
   }
 }

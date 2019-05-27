@@ -15,6 +15,7 @@
     "xterm": "^3.13.1"
   },
   "scripts": {
-    "build": "browserify src/main.ts -p [ tsify --noImplicitAny ] | uglifyjs -c > docs/bundle.js"
+    "build": "browserify src/main.ts -p [ tsify --noImplicitAny ] | uglifyjs -c > docs/bundle.js",
+    "debug": "browserify src/main.ts -p [ tsify --noImplicitAny ] --debug > docs/bundle.js"
   }
 }
