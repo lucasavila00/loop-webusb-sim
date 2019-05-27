@@ -1,10 +1,21 @@
 import { Serial, Port } from "./serial";
 import { Terminal } from "xterm";
-import { RendererLoop } from "./renderer_loop";
+import { RendererLoop } from "./loop/renderer";
 import { TERMINAL_OPTIONS } from "./constants";
 import { Renderer } from "./interfaces";
-import { getRendererType } from "./helpers";
-import { RendererTable } from "./renderer_table";
+import { RendererTable } from "./table/renderer";
+
+function getRenderer({ writeln }: { writeln: (s: string) => void }): Renderer {
+  if ((window as any).renderer_type === "LOOP") {
+    return new RendererLoop(writeln);
+  } else if ((window as any).renderer_type === "TABLE") {
+    return new RendererTable(writeln);
+  } else {
+    throw Error(
+      "It wasn't possible to determine the type of renderer based on window.renderer_type",
+    );
+  }
+}
 
 class Main {
   private arduinoPort: Port | undefined = undefined;
@@ -12,20 +23,23 @@ class Main {
   private terminal = new Terminal(TERMINAL_OPTIONS);
   private connectButton = document.getElementById("connect");
   private terminalRendererEelement = document.getElementById("terminal");
-
-  // three
-  private renderer: Renderer =
-    getRendererType() === "LOOP" ? new RendererLoop() : new RendererTable();
+  private renderer: Renderer; //inicializa depois que já tiver inicializado o terminal
 
   constructor() {
     if (!this.terminalRendererEelement) {
-      throw Error("No element with id terminal found when openning terminal");
+      throw Error("No element with id 'terminal' found when openning terminal");
     }
     this.terminal.open(this.terminalRendererEelement);
 
     this.registerTerminalKeyboardToSerial();
     this.registerClickHandlers();
     this.tryConnectingToArduino();
+
+    this.renderer = getRenderer({
+      writeln: s => {
+        this.terminal.writeln(s);
+      },
+    });
   }
 
   private connect = () => {
@@ -33,16 +47,16 @@ class Main {
       throw Error("Port not registered when connecting");
     }
     this.terminal.writeln(
-      "Connecting to " + this.arduinoPort.device_.productName + "...",
+      "Conectando a " + this.arduinoPort.device_.productName + "...",
     );
     this.arduinoPort.connect().then(
       () => {
         console.log(this.arduinoPort);
-        this.terminal.writeln("Connected.");
+        this.terminal.writeln("Conectado.");
         if (this.connectButton == null) {
           throw Error("Connect button not found");
         }
-        this.connectButton.textContent = "Disconnect";
+        this.connectButton.textContent = "Desconectar";
         if (this.arduinoPort == undefined) {
           throw Error("Port not registered when connecting");
         }
@@ -52,22 +66,21 @@ class Main {
             const dataDecoded = textDecoder.decode(data);
             const processed = this.processDecodedData(dataDecoded);
             if (!processed) {
-              this.terminal.write(dataDecoded);
+              this.terminal.write("Recebido: " + dataDecoded);
             }
           },
           error => {
-            this.terminal.writeln("Receive error: " + error);
+            this.terminal.writeln("Erro ao receber: " + error);
           },
         );
       },
       error => {
-        this.terminal.writeln("Connection error: " + error);
+        this.terminal.writeln("Erro de conexão: " + error);
       },
     );
   };
 
   private processDecodedData = (data: string): boolean => {
-    // console.log({ data });
     if (data.startsWith("_")) {
       return this.renderer.process(data);
     }
@@ -78,7 +91,7 @@ class Main {
     this.terminal.onData(str => {
       if (this.arduinoPort !== undefined) {
         this.arduinoPort.send(this.textEncoder.encode(str)).catch(error => {
-          this.terminal.writeln("Send error: " + error);
+          this.terminal.writeln("Erro de envio: " + error);
         });
       }
     });
@@ -95,7 +108,7 @@ class Main {
         if (this.connectButton == null) {
           throw Error("Connect button not found");
         }
-        this.connectButton.textContent = "Connect";
+        this.connectButton.textContent = "Conectar";
         this.arduinoPort = undefined;
       } else {
         Serial.requestPort()
@@ -104,7 +117,7 @@ class Main {
             this.connect();
           })
           .catch(error => {
-            this.terminal.writeln("Connection error: " + error);
+            this.terminal.writeln("Erro de conexão: " + error);
           });
       }
     });
@@ -113,7 +126,7 @@ class Main {
   private tryConnectingToArduino() {
     Serial.getPorts().then(ports => {
       if (ports.length == 0) {
-        this.terminal.writeln("No devices found.");
+        this.terminal.writeln("Nenhum dispositivo encontrado.");
       } else {
         this.arduinoPort = ports[0];
         this.connect();
