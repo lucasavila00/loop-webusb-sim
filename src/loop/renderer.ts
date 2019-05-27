@@ -26,11 +26,11 @@ const print_info = (writeln: (s: string) => void) => {
     `WebUSB só funciona em: Arduino Leonardo, Arduino/Genuino Micro, Arduino/Genuino Zero, Arduino MKR1000, Arduino MKRZero, Arduino MKRFox1200, Adafruit Feather 32u4`,
   );
   writeln("");
-  setTimeout(() => {
-    for (let i = 0; i < 20; i++) {
-      writeln("");
-    }
-  }, 10000);
+  // setTimeout(() => {
+  //   for (let i = 0; i < 20; i++) {
+  //     writeln("");
+  //   }
+  // }, 10000);
 };
 
 export class RendererLoop implements Renderer {
